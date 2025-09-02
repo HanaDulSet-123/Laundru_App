@@ -160,7 +160,7 @@ class _LoginAPIScreenState extends State<LoginAPIScreen> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: const Color.fromARGB(255, 23, 37, 99),
                     ),
                   ),
                 ),
@@ -173,7 +173,7 @@ class _LoginAPIScreenState extends State<LoginAPIScreen> {
                     child: Container(
                       margin: EdgeInsets.only(right: 8),
                       height: 1,
-                      color: Colors.white,
+                      color: const Color.fromARGB(255, 163, 83, 83),
                     ),
                   ),
                   Text(
@@ -251,7 +251,7 @@ class _LoginAPIScreenState extends State<LoginAPIScreen> {
       width: double.infinity,
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage("assets/image/color_teez.jpg"),
+          image: AssetImage("assets/image/laundry.jpg"),
           fit: BoxFit.cover,
         ),
       ),

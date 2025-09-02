@@ -1,152 +1,602 @@
 import 'package:flutter/material.dart';
-import 'package:laudry_app/api/register_user.dart';
-import 'package:laudry_app/model/get_user.dart';
+import 'package:flutter/services.dart';
+import 'package:laudry_app/view/layanan/pesanan.dart';
+
+void main() {
+  runApp(LaundryApp());
+}
+
+class LaundryApp extends StatelessWidget {
+  const LaundryApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+      ),
+    );
+
+    return MaterialApp(
+      title: 'LaundryExpress',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primaryColor: Color(0xFF2A79D3),
+        // accentColor: Color(0xFFFFA726),
+        fontFamily: 'Poppins',
+        scaffoldBackgroundColor: Color(0xFFF8F9FA),
+      ),
+      home: Dashboard(),
+    );
+  }
+}
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
 
   @override
-  State<Dashboard> createState() => _DashboardState();
+  _DashboardState createState() => _DashboardState();
 }
 
+// Future<void> _loadUsername() async {
+//   //  ambil data dari SharedPreferences
+//   SharedPreferences prefs = await SharedPreferences.getInstance();
+//   (() {
+//     _loadUsername() = prefs.getString('username') ?? "";
+//   });
+// }
+
 class _DashboardState extends State<Dashboard> {
-  late Future<GetUserModel16> _futureUser;
+  int _currentIndex = 0;
+  final List<Service> _services = [
+    Service('Cuci Reguler', 'assets/image/t-shirt.jpg', '2-3 hari', 7000),
+    Service('Cuci Kilat', 'assets/image/baju.png', '6 jam', 12000),
+    Service('Setrika Saja', 'assets/image/iron.png', '1 hari', 5000),
+    Service('Bed Cover', 'assets/image/bed-sheets.png', '3 hari', 30000),
+    Service('Karpet', 'assets/image/adornment.png', '4-5 hari', 45000),
+    Service('Sepatu', 'assets/image/sneakers.png', '2 hari', 25000),
+  ];
 
-  @override
-  void initState() {
-    super.initState();
-    _loadUserData();
-  }
-
-  void _loadUserData() {
-    setState(() {
-      _futureUser = RegistrationAPI.getProfile();
-    });
-  }
+  final List<Promo> _promos = [
+    Promo('Diskon 20% Cuci Reguler', 'Hanya untuk 50 pelanggan pertama',
+        'assets/image/disc.png', Color(0xFFFFE9C9)),
+    Promo('Gratis Antar-Jemput', 'Minimal order Rp 50.000',
+        'assets/image/fast-delivery.png', Color(0xFFD2F5FE)),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Dashboard"),
-        actions: [
-          IconButton(
-            onPressed: _loadUserData,
-            icon: const Icon(Icons.refresh),
-            tooltip: "Refresh Data",
+        centerTitle: true,
+        title: Stack(
+          alignment: Alignment.center,
+          children: [
+            Image.asset(
+              'assets/image/logo_yellow.png',
+            ),
+          ],
+        ),
+        backgroundColor: Colors.white,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(),
+              SizedBox(height: 20),
+              _buildSearchBar(),
+              SizedBox(height: 25),
+              _buildPromoSection(),
+              SizedBox(height: 25),
+              _buildServicesSection(),
+              SizedBox(height: 25),
+              _buildHowItWorks(),
+            ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: _buildBottomNavigationBar(),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Halo, Pelanggan',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            SizedBox(height: 4),
+            Text(
+              'Mau laundry apa hari ini?',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+              ),
+            ),
+          ],
+        ),
+        // CircleAvatar(
+        //   radius: 25,
+        //   backgroundColor: Theme.of(context).primaryColor,
+        //   child: Icon(
+        //     Icons.person,
+        //     color: Colors.white,
+        //     size: 30,
+        //   ),
+        // ),
+      ],
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 10,
+            offset: Offset(0, 4),
           ),
         ],
       ),
-      body: FutureBuilder<GetUserModel16>(
-        future: _futureUser,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data?.data == null) {
-            return const Center(child: Text('No data available'));
-          } else {
-            final user = snapshot.data!.data!; // asumsi model ada field data
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          // ✅ Controller dibuat di sini
-                          final nameController = TextEditingController(
-                            text: user.name,
-                          );
-                          final emailController = TextEditingController(
-                            text: user.email,
-                          );
-
-                          return AlertDialog(
-                            title: const Text("Edit Data"),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                TextFormField(
-                                  controller: nameController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Name',
-                                  ),
-                                ),
-                                TextFormField(
-                                  controller: emailController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Email',
-                                  ),
-                                ),
-                              ],
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: const Text("Tutup"),
-                              ),
-                              TextButton(
-                                onPressed: () async {
-                                  try {
-                                    final updatedUser =
-                                        await RegistrationAPI.updateUser(
-                                          name: nameController.text,
-                                          // kalau API butuh email, tambahin param email
-                                        );
-
-                                    setState(() {
-                                      _futureUser = Future.value(updatedUser);
-                                    });
-
-                                    Navigator.pop(context);
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text("Data berhasil disimpan"),
-                                      ),
-                                    );
-                                  } catch (e) {
-                                    Navigator.pop(context);
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text("Gagal update: $e"),
-                                      ),
-                                    );
-                                  }
-                                },
-                                child: const Text("Simpan"),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                    child: const Text("Edit Data"),
-                  ),
-                  Text(
-                    "Nama: ${user.name}",
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text("Email: ${user.email}"),
-                  const SizedBox(height: 8),
-                  Text("ID: ${user.id}"),
-                ],
+      child: Row(
+        children: [
+          Icon(Icons.search, color: Colors.grey),
+          SizedBox(width: 10),
+          Expanded(
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Cari layanan laundry...',
+                border: InputBorder.none,
+                hintStyle: TextStyle(color: Colors.grey),
               ),
-            );
-          }
-        },
+            ),
+          ),
+        ],
       ),
     );
   }
+
+  Widget _buildPromoSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Promo Spesial',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 15),
+        SizedBox(
+          height: 150,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: _promos.length,
+            itemBuilder: (context, index) {
+              return _buildPromoCard(_promos[index]);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPromoCard(Promo promo) {
+    return Container(
+      width: 280,
+      margin: EdgeInsets.only(right: 15),
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: promo.bgColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  promo.title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  promo.description,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[700],
+                  ),
+                ),
+                SizedBox(height: 12),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    'Klaim Sekarang',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Image.asset(
+            promo.imagePath,
+            width: 70,
+            height: 70,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildServicesSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Layanan Kami',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 15),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 15,
+            mainAxisSpacing: 15,
+            childAspectRatio: 0.85,
+          ),
+          itemCount: _services.length,
+          itemBuilder: (context, index) {
+            return _buildServiceCard(_services[index]);
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildServiceCard(Service service) {
+    return GestureDetector(
+      onTap: () {
+        _showServiceDetail(service);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Image.asset(
+                  service.imagePath,
+                  width: 30,
+                  height: 30,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+            Text(
+              service.name,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            SizedBox(height: 5),
+            Text(
+              'Rp ${service.price}/kg',
+              style: TextStyle(
+                fontSize: 11,
+                color: Colors.grey[600],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHowItWorks() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Cara Kerja',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 15),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildStep('Pesan', Icons.shopping_cart, 0),
+            _buildStep('Jemput', Icons.time_to_leave, 1),
+            _buildStep('Proses', Icons.local_laundry_service, 2),
+            _buildStep('Antar', Icons.delivery_dining, 3),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStep(String title, IconData icon, int index) {
+    return Column(
+      children: [
+        Container(
+          width: 60,
+          height: 60,
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: Colors.white, size: 30),
+        ),
+        SizedBox(height: 8),
+        Text(
+          title,
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
+        SizedBox(height: 3),
+        Text(
+          'Step ${index + 1}',
+          style: TextStyle(fontSize: 12, color: Colors.grey),
+        ),
+      ],
+    );
+  }
+
+  BottomNavigationBar _buildBottomNavigationBar() {
+    return BottomNavigationBar(
+      currentIndex: _currentIndex,
+      onTap: (index) {
+        setState(() {
+          _currentIndex = index;
+        });
+        if (index == 1) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => PesananList()),
+          );
+        }
+      },
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: Theme.of(context).primaryColor,
+      unselectedItemColor: Colors.grey,
+      items: [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Beranda',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.history),
+          label: 'Riwayat',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.shopping_basket),
+          label: 'Pesanan',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person),
+          label: 'Profil',
+        ),
+      ],
+    );
+  }
+
+  void _showServiceDetail(Service service) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: EdgeInsets.all(20),
+          height: MediaQuery.of(context).size.height * 0.7,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 60,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              Text(
+                service.name,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Icon(Icons.access_time, size: 18, color: Colors.grey),
+                  SizedBox(width: 5),
+                  Text(
+                    'Selesai dalam ${service.duration}',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ],
+              ),
+              SizedBox(height: 15),
+              Text(
+                'Deskripsi Layanan',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                'Layanan ${service.name.toLowerCase()} kami memberikan hasil terbaik dengan deterjen berkualitas tinggi dan proses yang higienis.',
+                style: TextStyle(color: Colors.grey[700]),
+              ),
+              SizedBox(height: 20),
+              Text(
+                'Harga',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                'Rp ${service.price} / kg',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Theme.of(context).primaryColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Spacer(),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _showOrderDialog(service);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    // primary: Theme.of(context).primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    'Pesan Sekarang',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showOrderDialog(Service service) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Pesan ${service.name}'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Berat laundry (kg):'),
+              SizedBox(height: 10),
+              TextFormField(
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: 'Masukkan berat',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Batal'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Pesanan ${service.name} berhasil dibuat!'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              },
+              child: Text('Pesan'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class Service {
+  final String name;
+  final String imagePath;
+  final String duration;
+  final int price;
+
+  Service(this.name, this.imagePath, this.duration, this.price);
+}
+
+class Promo {
+  final String title;
+  final String description;
+  final String imagePath;
+  final Color bgColor;
+
+  Promo(this.title, this.description, this.imagePath, this.bgColor);
 }

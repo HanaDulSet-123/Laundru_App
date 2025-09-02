@@ -20,7 +20,9 @@ class _PostApiScreenState extends State<PostApiScreen> {
   bool isLoading = false;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Stack(children: [buildBackground(), buildLayer()]));
+    return Scaffold(
+        // resizeToAvoidBottomInset: false,
+        body: Stack(children: [buildBackground(), buildLayer()]));
   }
 
   void registerUser() async {
@@ -241,7 +243,7 @@ class _PostApiScreenState extends State<PostApiScreen> {
       width: double.infinity,
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage("assets/image/color_teez.jpg"),
+          image: AssetImage("assets/image/laundry.jpg"),
           fit: BoxFit.cover,
         ),
       ),
