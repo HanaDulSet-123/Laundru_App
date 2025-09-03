@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:laudry_app/view/layanan/pesanan.dart';
+import 'package:laudry_app/view/layanan/riwayat_view.dart';
+import 'package:laudry_app/view/profile_screen.dart';
 
 void main() {
   runApp(LaundryApp());
@@ -219,15 +221,15 @@ class _DashboardState extends State<Dashboard> {
                 Text(
                   promo.title,
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 17,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 8),
+                SizedBox(height: 7),
                 Text(
                   promo.description,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 10,
                     color: Colors.grey[700],
                   ),
                 ),
@@ -365,8 +367,7 @@ class _DashboardState extends State<Dashboard> {
           children: [
             _buildStep('Pesan', Icons.shopping_cart, 0),
             _buildStep('Jemput', Icons.time_to_leave, 1),
-            _buildStep('Proses', Icons.local_laundry_service, 2),
-            _buildStep('Antar', Icons.delivery_dining, 3),
+            _buildStep('Antar', Icons.delivery_dining, 2),
           ],
         ),
       ],
@@ -411,6 +412,10 @@ class _DashboardState extends State<Dashboard> {
             context,
             MaterialPageRoute(builder: (context) => PesananList()),
           );
+        }
+        if (index == 2) {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => ProfileScreen16()));
         }
       },
       type: BottomNavigationBarType.fixed,
@@ -566,15 +571,23 @@ class _DashboardState extends State<Dashboard> {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pop(context); // tutup dialog
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Pesanan ${service.name} berhasil dibuat!'),
                     backgroundColor: Colors.green,
                   ),
                 );
+
+                // langsung ke RiwayatPesanan
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const RiwayatPesanan(),
+                  ),
+                );
               },
-              child: Text('Pesan'),
+              child: const Text('Pesan'),
             ),
           ],
         );

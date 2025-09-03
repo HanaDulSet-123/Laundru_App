@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class buttomnavigation extends StatefulWidget {
   const buttomnavigation({super.key});
 
@@ -45,7 +44,6 @@ class AboutPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(16),
-
       child: ListView(
         children: [
           Text(
@@ -56,7 +54,6 @@ class AboutPage extends StatelessWidget {
               color: Color.fromARGB(255, 0, 188, 235),
             ),
           ),
-
           SizedBox(height: 16),
           Text(
             'Aplikasi ini siap menghibur kegabutan Anda',

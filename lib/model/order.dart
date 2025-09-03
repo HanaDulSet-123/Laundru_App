@@ -4,21 +4,21 @@
 
 import 'dart:convert';
 
-DetailOrder detailOrderFromJson(String str) =>
-    DetailOrder.fromJson(json.decode(str));
+DetailOrderAPI detailOrderFromJson(String str) =>
+    DetailOrderAPI.fromJson(json.decode(str));
 
-String detailOrderToJson(DetailOrder data) => json.encode(data.toJson());
+String detailOrderToJson(DetailOrderAPI data) => json.encode(data.toJson());
 
-class DetailOrder {
+class DetailOrderAPI {
   String message;
   Data data;
 
-  DetailOrder({
+  DetailOrderAPI({
     required this.message,
     required this.data,
   });
 
-  factory DetailOrder.fromJson(Map<String, dynamic> json) => DetailOrder(
+  factory DetailOrderAPI.fromJson(Map<String, dynamic> json) => DetailOrderAPI(
         message: json["message"],
         data: Data.fromJson(json["data"]),
       );

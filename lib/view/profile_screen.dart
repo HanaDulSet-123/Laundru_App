@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:laudry_app/model/register_user.dart';
+import 'package:laudry_app/preference/shared_preference.dart';
+import 'package:laudry_app/widget/navigation.dart';
 
 class ProfileScreen16 extends StatefulWidget {
   const ProfileScreen16({super.key});
@@ -13,27 +15,27 @@ class _ProfileScreen16State extends State<ProfileScreen16> {
   bool isLoading = true;
   User? currentUser;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _getCurrentUser();
-  // }
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentUser();
+  }
 
-  // Future<void> _getCurrentUser() async {
-  //   try {
-  //     final userName = await PreferenceHandler.getName();
+  Future<void> _getCurrentUser() async {
+    try {
+      final userName = await PreferenceHandler.getName();
 
-  //     setState(() {
-  //       currentUser = User(name: userName, email: userEmail);
-  //       isLoading = false;
-  //     });
-  //   } catch (e) {
-  //     setState(() {
-  //       isLoading = false;
-  //       currentUser = null;
-  //     });
-  //   }
-  // }
+      setState(() {
+        // currentUser = User(name: userName?);
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        currentUser = null;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,14 +115,7 @@ class _ProfileScreen16State extends State<ProfileScreen16> {
                     ],
                   ),
                 ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 2,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
-        ],
-      ),
+      bottomNavigationBar: buttomnavigation(),
     );
   }
 }

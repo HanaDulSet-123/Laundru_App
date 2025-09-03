@@ -9,7 +9,7 @@ import 'package:laudry_app/preference/shared_preference.dart';
 class RegistrationAPI {
   static Future<RegistrasiModel16> registerUser({
     required String email,
-    required String password,
+    required String password, 
     required String name,
   }) async {
     final url = Uri.parse(Endpoint.register);
@@ -65,13 +65,13 @@ class RegistrationAPI {
     final url = Uri.parse(Endpoint.profile);
     final token = await PreferenceHandler.getToken();
 
-    print("Token: $token"); // Debug token
+    print("Token: $token"); 
 
     final response = await http.get(
       url,
       headers: {
         "Accept": "application/json",
-        "Authorization": token ?? "", // Pastikan tidak null
+        "Authorization": token ?? "", 
       },
     );
 

@@ -13,7 +13,7 @@ class PesananList extends StatelessWidget {
       title: 'LaundryExpress - Pesanan',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: Color(0xFF2A79D3),
+        primaryColor: Color(0xFFF8FAB4),
         // accentColor: Color(0xFFFFA726),
         fontFamily: 'Poppins',
         scaffoldBackgroundColor: Color(0xFFF8F9FA),
@@ -52,7 +52,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Daftar Pesanan'),
+        title: Text('Riwayat Pesanan'),
         backgroundColor: Theme.of(context).primaryColor,
         elevation: 0,
         actions: [
@@ -220,7 +220,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Theme.of(context).primaryColor,
+                    color: Color(0xFFBB6653),
                   ),
                 ),
               ],

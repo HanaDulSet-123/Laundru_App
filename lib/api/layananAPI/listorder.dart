@@ -4,20 +4,21 @@
 
 import 'dart:convert';
 
-ListOrder listOrderFromJson(String str) => ListOrder.fromJson(json.decode(str));
+ListOrderAPI listOrderFromJson(String str) =>
+    ListOrderAPI.fromJson(json.decode(str));
 
-String listOrderToJson(ListOrder data) => json.encode(data.toJson());
+String listOrderToJson(ListOrderAPI data) => json.encode(data.toJson());
 
-class ListOrder {
+class ListOrderAPI {
   String message;
   List<Datum> data;
 
-  ListOrder({
+  ListOrderAPI({
     required this.message,
     required this.data,
   });
 
-  factory ListOrder.fromJson(Map<String, dynamic> json) => ListOrder(
+  factory ListOrderAPI.fromJson(Map<String, dynamic> json) => ListOrderAPI(
         message: json["message"],
         data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
       );

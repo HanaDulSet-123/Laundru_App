@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:laudry_app/dashboard/home.dart';
 import 'package:laudry_app/view/profile_screen.dart';
 
 class ButtomNav16 extends StatefulWidget {
@@ -15,10 +14,7 @@ class _ButtomNav16State extends State<ButtomNav16> {
   bool isCheck = false;
   bool isCheckSwitch = false;
   int _selectedIndex = 0;
-  static const List<Widget> _widgetOptions = <Widget>[
-    Home(),
-    ProfileScreen16()
-  ];
+  static const List<Widget> _widgetOptions = <Widget>[ProfileScreen16()];
 
   @override
   Widget build(BuildContext context) {
