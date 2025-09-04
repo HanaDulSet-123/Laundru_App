@@ -36,8 +36,65 @@ class LoginScreen extends StatelessWidget {
         //"/bottomNav": (context) => const buttomnavigation(),
         LoginAPIScreen.id: (context) => const LoginAPIScreen(),
         PostApiScreen.id: (context) => const PostApiScreen(),
-        
+        // OrderSingle.id: (context) => const OrderSingle(),
       },
     );
   }
 }
+
+// import 'package:flutter/material.dart';
+// import 'package:flutter_screenutil/flutter_screenutil.dart';
+// import 'package:laudry_app/view/dashboard.dart';
+// import 'package:laudry_app/view/layanan/single_order.dart';
+// import 'package:laudry_app/view/login_screen.dart';
+
+// void main() {
+//   runApp(MyApp());
+// }
+
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return ScreenUtilInit(
+//       designSize: Size(375, 812),
+//       builder: (context, child) => MaterialApp(
+//         debugShowCheckedModeBanner: false,
+//         title: "Flutter Laundry UI",
+//         theme: ThemeData(
+//           scaffoldBackgroundColor: Color(0xFFF8FAB4),
+//           visualDensity: VisualDensity.adaptivePlatformDensity,
+//           // textTheme: GoogleFonts.poppinsTextTheme(),
+//         ),
+//         initialRoute: "/",
+//         onGenerateRoute: _onGenerateRoute,
+//       ),
+//     );
+//   }
+// }
+
+// Route<dynamic> _onGenerateRoute(RouteSettings settings) {
+//   switch (settings.name) {
+//     // case "/splashscreen":
+//     //   return MaterialPageRoute(builder: (BuildContext context) {
+//     //     return SplashScreen();
+//     //   });
+//     case "/login":
+//       return MaterialPageRoute(builder: (BuildContext context) {
+//         return LoginAPIScreen();
+//       });
+//     case "/dashboard":
+//       return MaterialPageRoute(builder: (BuildContext context) {
+//         return Dashboard();
+//       });
+//     case "/single-order":
+//       return MaterialPageRoute(builder: (BuildContext context) {
+//         return OrderSingle();
+//       });
+//     default:
+//       return MaterialPageRoute(builder: (BuildContext context) {
+//         return Dashboard();
+//       });
+//   }
+// }

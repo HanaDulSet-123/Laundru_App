@@ -16,7 +16,7 @@ class _buttomnavigationState extends State<buttomnavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 254, 254),
+      backgroundColor: const Color(0xFFF8FAB4),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFF67C090),

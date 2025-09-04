@@ -8,7 +8,7 @@ import 'package:laudry_app/view/post_screen.dart';
 
 class LoginAPIScreen extends StatefulWidget {
   const LoginAPIScreen({super.key});
-  static const id = "/login_api";
+  static const id = "/dashboard";
   @override
   State<LoginAPIScreen> createState() => _LoginAPIScreenState();
 }

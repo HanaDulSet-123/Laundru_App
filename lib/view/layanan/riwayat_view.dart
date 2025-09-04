@@ -51,7 +51,7 @@ class _RiwayatPesananState extends State<RiwayatPesanan> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Riwayat Pesanan"),
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.yellowAccent,
         elevation: 0,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
@@ -160,7 +160,7 @@ class _RiwayatPesananState extends State<RiwayatPesanan> {
                             "Rp ${pesanan['harga']}",
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: Colors.blue,
+                              color: Colors.yellowAccent,
                             ),
                           ),
                         ],

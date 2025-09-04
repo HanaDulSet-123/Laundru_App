@@ -27,7 +27,7 @@ class LaundryApp extends StatelessWidget {
         primaryColor: Color(0xFF2A79D3),
         // accentColor: Color(0xFFFFA726),
         fontFamily: 'Poppins',
-        scaffoldBackgroundColor: Color(0xFFF8F9FA),
+        scaffoldBackgroundColor: Color(0xFFF8FAB4),
       ),
       home: Dashboard(),
     );
@@ -35,6 +35,7 @@ class LaundryApp extends StatelessWidget {
 }
 
 class Dashboard extends StatefulWidget {
+  final String id = "dashboard";
   const Dashboard({super.key});
 
   @override
@@ -77,10 +78,14 @@ class _DashboardState extends State<Dashboard> {
           children: [
             Image.asset(
               'assets/image/logo_yellow.png',
+              width: 100,
+              height: 50,
+              fit: BoxFit.cover,
             ),
           ],
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xFFFAF9EE),
+        elevation: 0,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -402,6 +407,7 @@ class _DashboardState extends State<Dashboard> {
 
   BottomNavigationBar _buildBottomNavigationBar() {
     return BottomNavigationBar(
+      backgroundColor: Color(0xFFFAF9EE),
       currentIndex: _currentIndex,
       onTap: (index) {
         setState(() {
@@ -415,6 +421,10 @@ class _DashboardState extends State<Dashboard> {
         }
         if (index == 2) {
           Navigator.push(context,
+              MaterialPageRoute(builder: (context) => RiwayatPesanan()));
+        }
+        if (index == 3) {
+          Navigator.push(context,
               MaterialPageRoute(builder: (context) => ProfileScreen16()));
         }
       },
@@ -427,12 +437,12 @@ class _DashboardState extends State<Dashboard> {
           label: 'Beranda',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.history),
-          label: 'Riwayat',
-        ),
-        BottomNavigationBarItem(
           icon: Icon(Icons.shopping_basket),
           label: 'Pesanan',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.history),
+          label: 'Riwayat',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.person),
@@ -579,11 +589,10 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 );
 
-                // langsung ke RiwayatPesanan
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const RiwayatPesanan(),
+                    builder: (context) => const PesananList(),
                   ),
                 );
               },
