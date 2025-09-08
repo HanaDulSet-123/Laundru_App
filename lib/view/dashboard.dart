@@ -1,38 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:laudry_app/api/layananAPI/categori_api.dart';
+import 'package:laudry_app/extention/extention.dart';
+import 'package:laudry_app/model/get_categori.dart';
+import 'package:laudry_app/view/layanan/list_layanan.dart';
 import 'package:laudry_app/view/layanan/pesanan.dart';
 import 'package:laudry_app/view/layanan/riwayat_view.dart';
 import 'package:laudry_app/view/profile_screen.dart';
-
-void main() {
-  runApp(LaundryApp());
-}
-
-class LaundryApp extends StatelessWidget {
-  const LaundryApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-      ),
-    );
-
-    return MaterialApp(
-      title: 'LaundryExpress',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: Color(0xFF2A79D3),
-        // accentColor: Color(0xFFFFA726),
-        fontFamily: 'Poppins',
-        scaffoldBackgroundColor: Color(0xFFF8FAB4),
-      ),
-      home: Dashboard(),
-    );
-  }
-}
 
 class Dashboard extends StatefulWidget {
   final String id = "dashboard";
@@ -278,28 +251,42 @@ class _DashboardState extends State<Dashboard> {
           ),
         ),
         SizedBox(height: 15),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 15,
-            mainAxisSpacing: 15,
-            childAspectRatio: 0.85,
-          ),
-          itemCount: _services.length,
-          itemBuilder: (context, index) {
-            return _buildServiceCard(_services[index]);
+        FutureBuilder<GetCategories>(
+          future: CategoriApi.getCategoris(),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else if (snapshot.hasData) {
+              final users = snapshot.data as GetCategories;
+              return GridView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 15,
+                  mainAxisSpacing: 15,
+                  childAspectRatio: 0.85,
+                ),
+                itemCount: users.data?.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final dataUser = users.data?[index];
+                  return _buildServiceCard(dataUser!);
+                },
+              );
+            } else {
+              return Text("Gagal Memuat data");
+            }
           },
         ),
       ],
     );
   }
 
-  Widget _buildServiceCard(Service service) {
+  Widget _buildServiceCard(GetCategoriesData service) {
     return GestureDetector(
       onTap: () {
-        _showServiceDetail(service);
+        // _showServiceDetail(service);
+        context.push(LayananScreen());
       },
       child: Container(
         decoration: BoxDecoration(
@@ -324,8 +311,9 @@ class _DashboardState extends State<Dashboard> {
                 shape: BoxShape.circle,
               ),
               child: Center(
-                child: Image.asset(
-                  service.imagePath,
+                child: Image.network(
+                  service.imageUrl ??
+                      "https://koinworks.com/wp-content/uploads/2022/06/faktor-penting-perluas-bisnis-laundry.jpg",
                   width: 30,
                   height: 30,
                   color: Theme.of(context).primaryColor,
@@ -334,21 +322,21 @@ class _DashboardState extends State<Dashboard> {
             ),
             SizedBox(height: 10),
             Text(
-              service.name,
+              service.name ?? "",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(height: 5),
-            Text(
-              'Rp ${service.price}/kg',
-              style: TextStyle(
-                fontSize: 11,
-                color: Colors.grey[600],
-              ),
-            ),
+            // SizedBox(height: 5),
+            // Text(
+            //   'Rp ${service.price}/kg',
+            //   style: TextStyle(
+            //     fontSize: 11,
+            //     color: Colors.grey[600],
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -416,7 +404,7 @@ class _DashboardState extends State<Dashboard> {
         if (index == 1) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => PesananList()),
+            MaterialPageRoute(builder: (context) => OrderListScreen()),
           );
         }
         if (index == 2) {
@@ -425,7 +413,7 @@ class _DashboardState extends State<Dashboard> {
         }
         if (index == 3) {
           Navigator.push(context,
-              MaterialPageRoute(builder: (context) => ProfileScreen16()));
+              MaterialPageRoute(builder: (context) => ProfileScreen()));
         }
       },
       type: BottomNavigationBarType.fixed,
@@ -565,13 +553,14 @@ class _DashboardState extends State<Dashboard> {
             children: [
               Text('Berat laundry (kg):'),
               SizedBox(height: 10),
-              TextFormField(
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  hintText: 'Masukkan berat',
-                  border: OutlineInputBorder(),
-                ),
-              ),
+              // TextFormField(
+              //   controller: beratController,
+              //   keyboardType: TextInputType.number,
+              //   decoration: InputDecoration(
+              //     hintText: 'Masukkan berat',
+              //     border: OutlineInputBorder(),
+              //   ),
+              // ),
             ],
           ),
           actions: [
@@ -580,24 +569,28 @@ class _DashboardState extends State<Dashboard> {
               child: Text('Batal'),
             ),
             ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context); // tutup dialog
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Pesanan ${service.name} berhasil dibuat!'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
+                child: Text("data"),
+                onPressed: () {
+                  Navigator.pop(context);
 
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const PesananList(),
-                  ),
-                );
-              },
-              child: const Text('Pesan'),
-            ),
+                  // final DetailOrderAPI = {
+                  //   "serviceName": service.name,
+                  //   "berat": beratController.text,
+                  // };
+                  // ScaffoldMessenger.of(context).showSnackBar(
+                  //   SnackBar(
+                  //     content: Text('Pesanan ${service.name} berhasil dibuat!'),
+                  //     backgroundColor: Colors.green,
+                  //   ),
+                  // );
+
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => const OrderListScreen(),
+                  //   ),
+                  // );
+                }),
           ],
         );
       },

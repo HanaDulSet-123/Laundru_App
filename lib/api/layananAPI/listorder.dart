@@ -11,7 +11,7 @@ String listOrderToJson(ListOrderAPI data) => json.encode(data.toJson());
 
 class ListOrderAPI {
   String message;
-  List<Datum> data;
+  List<ListOrdersAPI> data;
 
   ListOrderAPI({
     required this.message,
@@ -20,7 +20,7 @@ class ListOrderAPI {
 
   factory ListOrderAPI.fromJson(Map<String, dynamic> json) => ListOrderAPI(
         message: json["message"],
-        data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
+        data: List<ListOrdersAPI>.from(json["data"].map((x) => ListOrdersAPI.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -29,7 +29,7 @@ class ListOrderAPI {
       };
 }
 
-class Datum {
+class ListOrdersAPI {
   int id;
   int customerId;
   String layanan;
@@ -39,7 +39,7 @@ class Datum {
   DateTime updatedAt;
   ServiceType? serviceType;
 
-  Datum({
+  ListOrdersAPI({
     required this.id,
     required this.customerId,
     required this.layanan,
@@ -50,7 +50,7 @@ class Datum {
     required this.serviceType,
   });
 
-  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+  factory ListOrdersAPI.fromJson(Map<String, dynamic> json) => ListOrdersAPI(
         id: json["id"],
         customerId: json["customer_id"],
         layanan: json["layanan"],

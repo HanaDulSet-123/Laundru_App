@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:laudry_app/view/login_screen.dart';
 import 'package:laudry_app/view/post_screen.dart';
+import 'package:laudry_app/view/splash_screen.dart';
 
 void main() {
   runApp(const LoginScreen());
@@ -31,10 +32,12 @@ class LoginScreen extends StatelessWidget {
           // This works for code too, not just values: Most code changes can be
           // tested with just a hot reload.
           ),
-      home: LoginAPIScreen(),
+      // home: LoginAPIScreen(),
+      initialRoute: SplashScreen.id,
       routes: {
         //"/bottomNav": (context) => const buttomnavigation(),
         LoginAPIScreen.id: (context) => const LoginAPIScreen(),
+        SplashScreen.id: (context) => SplashScreen(),
         PostApiScreen.id: (context) => const PostApiScreen(),
         // OrderSingle.id: (context) => const OrderSingle(),
       },

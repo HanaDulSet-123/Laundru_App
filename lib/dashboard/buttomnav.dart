@@ -14,7 +14,7 @@ class _ButtomNav16State extends State<ButtomNav16> {
   bool isCheck = false;
   bool isCheckSwitch = false;
   int _selectedIndex = 0;
-  static const List<Widget> _widgetOptions = <Widget>[ProfileScreen16()];
+  static const List<Widget> _widgetOptions = <Widget>[ProfileScreen()];
 
   @override
   Widget build(BuildContext context) {

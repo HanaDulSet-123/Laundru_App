@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:laudry_app/view/profile_screen.dart';
 
 class OrderSingle extends StatefulWidget {
   const OrderSingle({super.key});
@@ -9,6 +10,17 @@ class OrderSingle extends StatefulWidget {
 }
 
 class _OrderSingleState extends State<OrderSingle> {
+  ProfileScreen? orders;
+  String? errorMessage;
+  bool isLoading = false;
+
+  void handleOrder() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
