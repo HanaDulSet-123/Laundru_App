@@ -1,104 +1,52 @@
-// To parse this JSON data, do
-//
-//     final listOrder = listOrderFromJson(jsonString);
-
 import 'dart:convert';
 
-ListOrderAPI listOrderFromJson(String str) =>
-    ListOrderAPI.fromJson(json.decode(str));
+import 'package:http/http.dart' as http;
+import 'package:laudry_app/api/endpoint/endpoint.dart';
+import 'package:laudry_app/model/add_order.dart';
+import 'package:laudry_app/model/item.dart';
+import 'package:laudry_app/preference/shared_preference.dart';
 
-String listOrderToJson(ListOrderAPI data) => json.encode(data.toJson());
+class LayananApi {
+  static Future<AddOrder> addOrders({
+    required String layanan,
+    required List<Map<String, dynamic>> items,
+    required String status,
+  }) async {
+    final url = Uri.parse(Endpoint.addorder);
+    final response = await http.post(
+      url,
+      body: {"layanan": layanan, "status": status, "items": items},
+      headers: {"Accept": "application/json"},
+    );
+    if (response.statusCode == 200) {
+      return AddOrder.fromJson(json.decode(response.body));
+    } else {
+      final error = json.decode(response.body);
+      throw Exception(error["message"] ?? "Register gagal");
+    }
+  }
 
-class ListOrderAPI {
-  String message;
-  List<ListOrdersAPI> data;
+  static Future<List<ModelItemData>> getOrder() async {
+    final url = Uri.parse(Endpoint.listitem);
+    final token = await PreferenceHandler.getToken();
 
-  ListOrderAPI({
-    required this.message,
-    required this.data,
-  });
+    print("Token: $token");
 
-  factory ListOrderAPI.fromJson(Map<String, dynamic> json) => ListOrderAPI(
-        message: json["message"],
-        data: List<ListOrdersAPI>.from(json["data"].map((x) => ListOrdersAPI.fromJson(x))),
-      );
+    final response = await http.get(
+      url,
+      headers: {
+        "Accept": "application/json",
+        "Authorization": token ?? "",
+      },
+    );
+    print("Response Status: ${response.statusCode}");
+    print("Response Body: ${response.body}");
 
-  Map<String, dynamic> toJson() => {
-        "message": message,
-        "data": List<dynamic>.from(data.map((x) => x.toJson())),
-      };
-}
-
-class ListOrdersAPI {
-  int id;
-  int customerId;
-  String layanan;
-  int? serviceTypeId;
-  String status;
-  DateTime createdAt;
-  DateTime updatedAt;
-  ServiceType? serviceType;
-
-  ListOrdersAPI({
-    required this.id,
-    required this.customerId,
-    required this.layanan,
-    required this.serviceTypeId,
-    required this.status,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.serviceType,
-  });
-
-  factory ListOrdersAPI.fromJson(Map<String, dynamic> json) => ListOrdersAPI(
-        id: json["id"],
-        customerId: json["customer_id"],
-        layanan: json["layanan"],
-        serviceTypeId: json["service_type_id"],
-        status: json["status"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-        serviceType: json["service_type"] == null
-            ? null
-            : ServiceType.fromJson(json["service_type"]),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "customer_id": customerId,
-        "layanan": layanan,
-        "service_type_id": serviceTypeId,
-        "status": status,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-        "service_type": serviceType?.toJson(),
-      };
-}
-
-class ServiceType {
-  int id;
-  String name;
-  DateTime createdAt;
-  DateTime updatedAt;
-
-  ServiceType({
-    required this.id,
-    required this.name,
-    required this.createdAt,
-    required this.updatedAt,
-  });
-
-  factory ServiceType.fromJson(Map<String, dynamic> json) => ServiceType(
-        id: json["id"],
-        name: json["name"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
-      };
+    if (response.statusCode == 200) {
+      final List<dynamic> userJson = json.decode(response.body)["data"];
+      return userJson.map((json) => ModelItemData.fromJson(json)).toList();
+    } else {
+      throw Exception("Gagal memuat data");
+    }
+  }
 }

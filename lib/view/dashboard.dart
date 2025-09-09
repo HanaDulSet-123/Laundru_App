@@ -50,7 +50,7 @@ class _DashboardState extends State<Dashboard> {
           alignment: Alignment.center,
           children: [
             Image.asset(
-              'assets/image/logo_yellow.png',
+              'assets/image/logo_new.png',
               width: 100,
               height: 50,
               fit: BoxFit.cover,
