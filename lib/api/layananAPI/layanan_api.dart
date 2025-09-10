@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:laudry_app/api/endpoint/endpoint.dart';
 import 'package:laudry_app/model/item.dart';
-import 'package:laudry_app/model/layanan_api.dart';
+import 'package:laudry_app/model/layanan_model.dart';
 import 'package:laudry_app/preference/shared_preference.dart';
 
 class LayananApi {

@@ -2,12 +2,12 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:laudry_app/api/endpoint/endpoint.dart';
-import 'package:laudry_app/model/add_order.dart';
 import 'package:laudry_app/model/item.dart';
+import 'package:laudry_app/model/list_order_model.dart';
 import 'package:laudry_app/preference/shared_preference.dart';
 
-class LayananApi {
-  static Future<AddOrder> addOrders({
+class OrderAPI {
+  static Future<ListOrderModel> getOrders({
     required String layanan,
     required List<Map<String, dynamic>> items,
     required String status,
@@ -15,11 +15,11 @@ class LayananApi {
     final url = Uri.parse(Endpoint.addorder);
     final response = await http.post(
       url,
-      body: {"layanan": layanan, "status": status, "items": items},
+      body: jsonEncode({"layanan": layanan, "status": status, "items": items}),
       headers: {"Accept": "application/json"},
     );
     if (response.statusCode == 200) {
-      return AddOrder.fromJson(json.decode(response.body));
+      return ListOrderModel.fromJson(json.decode(response.body));
     } else {
       final error = json.decode(response.body);
       throw Exception(error["message"] ?? "Register gagal");

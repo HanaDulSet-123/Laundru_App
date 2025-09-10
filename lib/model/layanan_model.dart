@@ -22,7 +22,8 @@ class ModelLayanan {
         message: json["message"],
         data: json["data"] == null
             ? []
-            : List<ModelLayananData>.from(json["data"]!.map((x) => ModelLayananData.fromJson(x))),
+            : List<ModelLayananData>.from(
+                json["data"]!.map((x) => ModelLayananData.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -38,15 +39,18 @@ class ModelLayananData {
   String? name;
   String? waktuPengerjaan;
   Category? category;
+  int? price;
 
   ModelLayananData({
     this.id,
     this.name,
     this.waktuPengerjaan,
     this.category,
+    this.price,
   });
 
-  factory ModelLayananData.fromJson(Map<String, dynamic> json) => ModelLayananData(
+  factory ModelLayananData.fromJson(Map<String, dynamic> json) =>
+      ModelLayananData(
         id: json["id"],
         name: json["name"],
         waktuPengerjaan: json["waktu_pengerjaan"],

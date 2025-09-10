@@ -1,362 +1,115 @@
 import 'package:flutter/material.dart';
+import 'package:laudry_app/api/layananAPI/listorder.dart';
+import 'package:laudry_app/api/layananAPI/order_api.dart'; // sesuaikan path
+import 'package:laudry_app/model/list_order_model.dart';
+import 'package:laudry_app/model/add_order_model.dart';
 
+class PesananPage extends StatefulWidget {
+  final int customerId;
+  final List<Map<String, dynamic>> items;
 
-class OrderListScreen extends StatefulWidget {
-  const OrderListScreen({super.key});
+  const PesananPage({
+    super.key,
+    required this.customerId,
+    required this.items,
+  });
 
   @override
-  _OrderListScreenState createState() => _OrderListScreenState();
+  State<PesananPage> createState() => _PesananPageState();
 }
 
-class _OrderListScreenState extends State<OrderListScreen> {
-  // final url = Uri.parse("$base64Url/layanan");
-  final List<Order> _orders = [
-    Order(
-      id: 'ORD001',
-      date: DateTime(2023, 10, 15),
-      items: '',
-      status: 'Selesai',
-      total: 31000,
-      statusColor: Colors.green,
-    ),
-  ];
+class _PesananPageState extends State<PesananPage> {
+  late Future<ListOrderModel> _futureOrders;
 
-  String _filterStatus = 'Semua';
+  @override
+  void initState() {
+    super.initState();
+    _futureOrders = OrderAPI.getOrders(); // FUTURE sesuai tipe ListOrderModel
+  }
+
+  Future<void> _createOrder() async {
+    try {
+      final AddOrderModel addOrder = await OrderAPI.createOrder(
+        customerId: widget.customerId,
+        items: widget.items,
+      );
+
+      final orderId = addOrder.data?.id ?? '-';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Pesanan berhasil dibuat! ID: $orderId')),
+      );
+
+      // refresh daftar setelah berhasil buat order
+      setState(() {
+        _futureOrders = OrderAPI.getOrders();
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal membuat pesanan: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    List<Order> filteredOrders = _filterStatus == 'Semua'
-        ? _orders
-        : _orders.where((order) => order.status == _filterStatus).toList();
-
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Riwayat Pesanan'),
-        backgroundColor: Theme.of(context).primaryColor,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.filter_list),
-            onPressed: _showFilterDialog,
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          _buildStatsCard(),
-          Expanded(
-            child: filteredOrders.isEmpty
-                ? Center(
-                    child: Text(
-                      'Tidak ada pesanan dengan status $_filterStatus',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: filteredOrders.length,
-                    itemBuilder: (context, index) {
-                      return _buildOrderCard(filteredOrders[index]);
-                    },
-                  ),
-          ),
-        ],
-      ),
-    );
-  }
+      appBar: AppBar(title: const Text("Pesanan Baru")),
+      body: FutureBuilder<ListOrderModel>(
+        future: _futureOrders,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+          if (!snapshot.hasData || snapshot.data!.data == null) {
+            return const Center(child: Text('Tidak ada pesanan'));
+          }
 
-  Widget _buildStatsCard() {
-    return Container(
-      margin: EdgeInsets.all(16),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildStatItem('Semua', _orders.length, Colors.blue),
-          _buildStatItem(
-              'Selesai',
-              _orders.where((order) => order.status == 'Selesai').length,
-              Colors.green),
-          _buildStatItem(
-              'Diproses',
-              _orders.where((order) => order.status == 'Diproses').length,
-              Colors.orange),
-          _buildStatItem(
-              'Menunggu',
-              _orders.where((order) => order.status == 'Menunggu').length,
-              Colors.grey),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatItem(String title, int count, Color color) {
-    return Column(
-      children: [
-        Container(
-          padding: EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.2),
-            shape: BoxShape.circle,
-          ),
-          child: Text(
-            count.toString(),
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
-        ),
-        SizedBox(height: 5),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildOrderCard(Order order) {
-    return Card(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 3,
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  order.id,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+          final layanan = snapshot.data!;
+          return ListView.builder(
+            padding: const EdgeInsets.all(12),
+            itemCount: layanan.data?.length ?? 0,
+            itemBuilder: (context, index) {
+              final item = layanan.data![index];
+              return Card(
+                elevation: 4,
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: order.statusColor.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    order.status,
-                    style: TextStyle(
-                      color: order.statusColor,
+                child: ListTile(
+                  leading: const Icon(Icons.receipt_long, size: 40),
+                  title: Text(
+                    item.layanan ?? "-",
+                    style: const TextStyle(
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
-            Text(
-              _formatDate(order.date),
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 14,
-              ),
-            ),
-            SizedBox(height: 10),
-            Text(
-              order.items,
-              style: TextStyle(
-                fontSize: 14,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            SizedBox(height: 10),
-            Divider(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Total:',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Status: ${item.status ?? '-'}"),
+                      Text("Total: Rp ${item.total ?? 0}"),
+                    ],
                   ),
-                ),
-                Text(
-                  'Rp ${order.total.toStringAsFixed(0)}',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFFBB6653),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    _showOrderDetail(order);
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    // contoh navigation, sesuaikan route
+                    // Navigator.pushNamed(context, '/detail-order', arguments: item.id);
                   },
-                  child: Text('Detail'),
                 ),
-                if (order.status == 'Menunggu')
-                  TextButton(
-                    onPressed: () {
-                      _confirmOrderCancellation(order);
-                    },
-                    child: Text(
-                      'Batalkan',
-                      style: TextStyle(color: Colors.red),
-                    ),
-                  ),
-              ],
-            ),
-          ],
-        ),
+              );
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _createOrder,
+        child: const Icon(Icons.add),
       ),
     );
   }
-
-  void _showFilterDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Filter Status'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildFilterOption('Semua'),
-              _buildFilterOption('Menunggu'),
-              _buildFilterOption('Dijemput'),
-              _buildFilterOption('Diproses'),
-              _buildFilterOption('Diantar'),
-              _buildFilterOption('Selesai'),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildFilterOption(String status) {
-    return ListTile(
-      title: Text(status),
-      trailing: _filterStatus == status
-          ? Icon(Icons.check, color: Theme.of(context).primaryColor)
-          : null,
-      onTap: () {
-        setState(() {
-          _filterStatus = status;
-        });
-        Navigator.pop(context);
-      },
-    );
-  }
-
-  void _showOrderDetail(Order order) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Detail Pesanan'),
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('ID: ${order.id}',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                SizedBox(height: 10),
-                Text('Tanggal: ${_formatDate(order.date)}'),
-                SizedBox(height: 10),
-                Text('Status: ${order.status}'),
-                SizedBox(height: 10),
-                Text('Items: ${order.items}'),
-                SizedBox(height: 10),
-                Text('Total: Rp ${order.total.toStringAsFixed(0)}'),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Tutup'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _confirmOrderCancellation(Order order) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Batalkan Pesanan?'),
-          content:
-              Text('Apakah Anda yakin ingin membatalkan pesanan ${order.id}?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Tidak'),
-            ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _orders.removeWhere((o) => o.id == order.id);
-                });
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Pesanan ${order.id} telah dibatalkan'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              },
-              child: Text('Ya', style: TextStyle(color: Colors.red)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
-  }
-}
-
-class Order {
-  final String id;
-  final DateTime date;
-  final String items;
-  final String status;
-  final int total;
-  final Color statusColor;
-
-  Order({
-    required this.id,
-    required this.date,
-    required this.items,
-    required this.status,
-    required this.total,
-    required this.statusColor,
-  });
 }

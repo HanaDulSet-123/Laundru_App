@@ -102,7 +102,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Profile", style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFF3338A0),
+        backgroundColor: Color(0xFFFAF9EE),
       ),
       // drawer: buttomnavigation(),
       body: isLoading

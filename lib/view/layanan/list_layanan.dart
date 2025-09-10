@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:laudry_app/api/layananAPI/layanan_api.dart';
 import 'package:laudry_app/extention/extention.dart';
-import 'package:laudry_app/model/layanan_api.dart';
+import 'package:laudry_app/model/layanan_model.dart';
 import 'package:laudry_app/view/layanan/list_item.dart';
 
 class LayananScreen extends StatefulWidget {
@@ -17,7 +17,7 @@ class _LayananScreenState extends State<LayananScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Daftar Layanan"),
-        backgroundColor: Colors.blue,
+        backgroundColor: Color(0xFFFAF9EE),
       ),
       body: FutureBuilder<ModelLayanan>(
         future: LayananApi.getLayanan(),
@@ -76,3 +76,63 @@ class _LayananScreenState extends State<LayananScreen> {
     );
   }
 }
+
+// // lib/view/layanan/list_layanan.dart
+// import 'package:flutter/material.dart';
+// import 'package:laudry_app/api/layananAPI/layanan_api.dart';
+// import 'package:laudry_app/model/layanan_model.dart';
+
+// class ListLayananPage extends StatefulWidget {
+//   const ListLayananPage({super.key});
+
+//   @override
+//   State<ListLayananPage> createState() => _ListLayananPageState();
+// }
+
+// class _ListLayananPageState extends State<ListLayananPage> {
+//   late Future<List<ModelLayananData>> futureLayanan;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     Future<List<ModelLayanan>>;
+//     LayananApi.getLayanan(); // ✅ ambil dari API
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: const Text("Daftar Layanan")),
+//       body: FutureBuilder<List<ModelLayananData>>(
+//         future: futureLayanan,
+//         builder: (context, snapshot) {
+//           if (snapshot.connectionState == ConnectionState.waiting) {
+//             return const Center(child: CircularProgressIndicator());
+//           } else if (snapshot.hasError) {
+//             return Center(child: Text("Error: ${snapshot.error}"));
+//           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+//             return const Center(child: Text("Tidak ada layanan"));
+//           } else {
+//             final layananList = snapshot.data!;
+//             return ListView.builder(
+//               itemCount: layananList.length,
+//               itemBuilder: (context, index) {
+//                 final layanan = layananList[index]; // ✅ pakai object model
+//                 return Card(
+//                   margin: const EdgeInsets.all(8),
+//                   child: ListTile(
+//                     title: Text("Harga: Rp${layanan.name}"),
+//                     subtitle: Text("Harga: Rp${layanan.price}"),
+//                     onTap: () {
+//                       // contoh: masuk ke detail layanan
+//                     },
+//                   ),
+//                 );
+//               },
+//             );
+//           }
+//         },
+//       ),
+//     );
+//   }
+// }

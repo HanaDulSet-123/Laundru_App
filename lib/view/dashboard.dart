@@ -3,8 +3,6 @@ import 'package:laudry_app/api/layananAPI/categori_api.dart';
 import 'package:laudry_app/extention/extention.dart';
 import 'package:laudry_app/model/get_categori.dart';
 import 'package:laudry_app/view/layanan/list_layanan.dart';
-import 'package:laudry_app/view/layanan/pesanan.dart';
-import 'package:laudry_app/view/layanan/riwayat_view.dart';
 import 'package:laudry_app/view/profile_screen.dart';
 
 class Dashboard extends StatefulWidget {
@@ -401,17 +399,17 @@ class _DashboardState extends State<Dashboard> {
         setState(() {
           _currentIndex = index;
         });
-        if (index == 1) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => OrderListScreen()),
-          );
-        }
+        // if (index == 1) {
+        //   Navigator.push(
+        //     context,
+        //     MaterialPageRoute(builder: (context) => OrderListScreen()),
+        //   );
+        // }
+        // if (index == 2) {
+        //   Navigator.push(context,
+        //       MaterialPageRoute(builder: (context) => RiwayatPesanan()));
+        // }
         if (index == 2) {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => RiwayatPesanan()));
-        }
-        if (index == 3) {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => ProfileScreen()));
         }
@@ -428,10 +426,10 @@ class _DashboardState extends State<Dashboard> {
           icon: Icon(Icons.shopping_basket),
           label: 'Pesanan',
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.history),
-          label: 'Riwayat',
-        ),
+        // BottomNavigationBarItem(
+        //   icon: Icon(Icons.history),
+        //   label: 'Riwayat',
+        // ),
         BottomNavigationBarItem(
           icon: Icon(Icons.person),
           label: 'Profil',

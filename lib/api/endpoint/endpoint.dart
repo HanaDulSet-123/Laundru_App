@@ -6,10 +6,12 @@ class Endpoint {
   static const String listlayanan = "$baseURL/layanan";
   static const String addorder = "$baseURL/orders";
   static const String categories = "$baseURL/categories";
-  static const String detailorder = "$baseURL/orders/4";
   static const String listuser = "$baseURL/me";
   static const String listitem = "$baseURL/items";
   static const String listorder = "$baseURL/orders";
+
+  static String detailorder(int id) => "$baseURL/orders/$id";
+  static String updateorder(int id) => "$baseURL/orders/$id";
 
   // DELETE
   static String deletelayanan(int id) => "$baseURL/layanan/$id";
